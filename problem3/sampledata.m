@@ -13,5 +13,6 @@ hold off
 plot(X(y==1,1),X(y==1,2),'o','MarkerEdgeColor','blue');
 hold on
 plot(X(y==-1,1),X(y==-1,2),'o','MarkerEdgeColor','red');
+xlabel('x1');ylabel('x2');
 end
 

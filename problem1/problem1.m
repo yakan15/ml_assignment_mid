@@ -1,4 +1,4 @@
-function [weight,n_weight,n_loss,n_loss_diff] = problem1(lambda,alpha)
+function [weight,weight_neuton,acc_train,acc_tst] = problem1(lambda,alpha)
 %STEEPGD この関数の概要をここに記述
 %   詳細説明をここに記述
 %{
@@ -8,20 +8,20 @@ n_wewight:繰り返しごとの重みの値
 %}
 close all;clc;
 
-[X,y] = sampledata(5453,400);
+[X,y,X_test,y_test] = sampledata(0,100,100);
 
 n = size(X,1);
 
-n_iter = 100;
+n_iter = 20;
 n_loss = zeros(n_iter,1);
 n_loss_neuton = zeros(n_iter,1);
 X_1 = [ones(size(X,1),1) X];
+X_test = [ones(size(X_test,1),1) X_test];
+% X_test = X_1(101:150,:);
+% y_test = y(101:150,:);
 
-X_test = X_1(351:400,:);
-y_test = y(351:400,:);
-
-X_1 = X_1(1:150,:);
-y = y(1:150,:);
+% X_1 = X_1(1:100,:);
+% y = y(1:100,:);
 
 % alpha = 1/4*max(eig(1/n*(X_1')*X_1+2*lambda*eye(size(X_1,2))));
 fprintf("alpha=%d\n",alpha);
@@ -55,11 +55,25 @@ pred = 2*(X_test*weight>0)-1;
 step=linspace(-4,4,20);
 x2 = -(weight(2)*step+weight(1))/weight(3);
 plot(step,x2);
+f3 = figure;
+figure(f3);
+plot(X_test(y_test==1,2),X_test(y_test==1,3),'o','MarkerEdgeColor','blue');
+hold on;
+plot(X_test(y_test==-1,2),X_test(y_test==-1,3),'o','MarkerEdgeColor','red');
+plot(step,x2);
+xlabel('x1')
+ylabel('x2')
+pred = 2*(X_test*weight>0)-1;
 acc_tst=sum(pred==y_test)/size(X_test,1)*100;
-fprintf("accuracy:%d",acc_tst);
+pred = 2*(X_1*weight>0)-1;
+acc_train=sum(pred==y)/size(X_1,1)*100;
+fprintf("accuracy train:%d, test:%d\n",acc_train,acc_tst);
 f2 = figure;
 figure(f2);
 iter = linspace(1,n_iter+1,n_iter+1);
 plot(iter,[loss_ini;n_loss],'-o',iter,[loss_ini;n_loss_neuton],'-o');
+xlabel('iteration');
+ylabel('loss');
+legend('SteepestGD','Neuton');
 end
 
